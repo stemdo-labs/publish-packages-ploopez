@@ -14,26 +14,21 @@ _Utiliza GitHub Actions para publicar tu proyecto en una imagen Docker._
 </header>
 
 <!--
-  <<< Notas del autor: Paso 2 >>>
+  <<< Notas del autor: Paso 3 >>>
   Comienza este paso reconociendo el paso anterior.
   Define términos y enlaza a docs.github.com.
 -->
 
-## Paso 2: Agregar un Dockerfile
+## Paso 3: Fusiona tus cambios
 
-_¡Has creado un flujo de trabajo de publicación! :tada:_
+_¡Vamos a publicar! :heart:_
 
-Añadiremos un `Dockerfile` a la rama `cd`. El `Dockerfile` contiene un conjunto de instrucciones que se almacenan en una `Imagen de Docker`. Si deseas, puedes [aprender más sobre Dockerfiles](https://docs.docker.com/engine/reference/builder/).
+Ahora puedes [fusionar](https://docs.github.com/es/get-started/quickstart/github-glossary#merge) tus cambios.
 
-### :keyboard: Actividad: Agregar un Dockerfile
+### :keyboard: Actividad: Fusiona tus cambios
 
-1. En la rama `cd`, crea un archivo `Dockerfile` en la raíz del proyecto e incluye:
-   ```dockerfile
-   FROM nginx:1.24-alpine
-   COPY . /usr/share/nginx/html
-   ```
-
-1. Haz commit a tus cambios.
+1. Fusiona tus cambios desde `cd` hacia `stemdo`. Si creaste la solicitud de extracción en el paso 1, simplemente abre esa PR y haz clic en **Merge pull request**. Si no creaste la solicitud de extracción anteriormente, puedes hacerlo ahora siguiendo las instrucciones del paso 1.
+1. (opcional) Elimina la rama `cd`.
 1. Espera aproximadamente 20 segundos y luego actualiza esta página (la que estás siguiendo las instrucciones). [GitHub Actions](https://docs.github.com/en/actions) se actualizará automáticamente al siguiente paso.
 
 <footer>

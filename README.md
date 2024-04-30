@@ -14,46 +14,80 @@ _Utiliza GitHub Actions para publicar tu proyecto en una imagen Docker._
 </header>
 
 <!--
-  <<< Notas del autor: Inicio del curso >>>
-  Incluye el botón de inicio, una nota sobre los minutos de acciones,
-  y dile al aprendiz por qué debería tomar el curso.
+  <<< Author notes: Step 1 >>>
+  Choose 3-5 steps for your course.
+  The first step is always the hardest, so pick something easy!
+  Link to docs.github.com for further explanations.
+  Encourage users to open new tabs for steps!
 -->
 
-## Bienvenido
+## Paso 1: Crear el archivo de flujo de trabajo
 
-GitHub Actions hace más fácil que nunca incorporar la entrega continua (CD) en tus repositorios. Este curso te enseñará lo necesario para probar y entregar artefactos que estén listos para implementarse.
+_¡Bienvenido a "Publicar paquetes"! :wave:_
 
-- **¿Para quién es esto?**: Desarrolladores, ingenieros DevOps, desarrolladores full stack, ingenieros en la nube.
-- **Lo que aprenderás**: Entrega continua, cómo guardar y acceder a artefactos de construcción, gestión de paquetes, cómo publicar en GitHub Packages.
-- **Lo que construirás**: Construiremos una imagen Docker que ejecute un pequeño juego.
-- **Prerrequisitos**: Te recomendamos que primero completes los siguientes cursos: [Hola, GitHub Actions](https://github.com/skills/hello-github-actions) y [Integración continua](https://github.com/skills/continuous-integration).
-- **Duración**: Este curso toma menos de 30 minutos para completarse.
+Primero, tómate un momento para examinar la imagen a continuación. Muestra la relación entre _integración continua_, _entrega continua_ y _despliegue continuo_.
 
+![](https://i.imgur.com/xZCkjmU.png)
 
-En este curso, aprenderás a:
+**Integración continua** (CI) es una práctica donde los desarrolladores integran código probado en una rama compartida varias veces al día. **Entrega continua** (CD) es la siguiente fase de **integración continua** (CI) donde también nos aseguramos de empaquetar el código en una _release_ y almacenarlo en algún lugar, preferiblemente en un repositorio de artefactos. Por último, **despliegue continuo** (CD) lleva **entrega continua** (CD) al siguiente nivel al desplegar nuestras versiones directamente al mundo.
 
-1. Crear un flujo de trabajo
-2. Agregar un Dockerfile
-3. Combinar tu solicitud de extracción
+[**Docker**](https://www.docker.com/why-docker) es un motor que te permite ejecutar contenedores.
+Los contenedores son paquetes de software que pueden ejecutarse de manera confiable en diferentes entornos. Los contenedores incluyen todo lo necesario para ejecutar la aplicación. Los contenedores son livianos en comparación con las máquinas virtuales. Un **Dockerfile** es un documento de texto que contiene todos los comandos e instrucciones necesarios para construir una imagen de Docker. Una **imagen de Docker** es un paquete ejecutable compuesto de código, dependencias, bibliotecas, un tiempo de ejecución, variables de entorno y archivos de configuración. Un **contenedor de Docker** es una instancia de tiempo de ejecución de una imagen de Docker.
 
-### Cómo comenzar este curso siendo stemdoer
-
-Simplemente espera, esta vista cambiará. 
-Haz click en la pestaña ``Actions`` y observa algo se está ejecutando.
-
-### No eres stemdoer
-
-Adelante haz click en el botón.
+Comenzaremos creando el archivo de flujo de trabajo para publicar una imagen de Docker en GitHub Packages.
 
 
-[![comenzar-curso](https://user-images.githubusercontent.com/1221423/235727646-4a590299-ffe5-480d-8cd5-8194ea184546.svg)](https://github.com/new?template_name=publish-packages&template_owner=stemdo-labs&visibility=public)
+### :keyboard: Actividad: Crear el archivo de flujo de trabajo
 
-1. Haz clic derecho en **Comenzar curso** y abre el enlace en una nueva pestaña.
-2. En la nueva pestaña, la mayoría de las opciones se completarán automáticamente.
-   - Para el propietario, elige tu cuenta personal o una organización para alojar el repositorio.
-   - Recomendamos crear un repositorio público, ya que los repositorios privados [utilizarán minutos de Actions](https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions).
-   - Desplázate hacia abajo y haz clic en el botón **Crear repositorio** en la parte inferior del formulario.
-3. Después de que se cree tu nuevo repositorio, espera unos 20 segundos, luego actualiza la página. Sigue las instrucciones paso a paso en el README del nuevo repositorio.
+1. Abre una nueva pestaña del navegador y trabaja en los pasos en tu segunda pestaña mientras lees las instrucciones en esta pestaña.
+1. Navega a la pestaña **Code**.
+1. Desde el menú desplegable de la rama **stemdo**, haz clic en la rama **cd**.
+1. Navega hasta la carpeta `.github/workflows/`, luego selecciona **Añadir archivo** y haz clic en **Crear nuevo archivo**.
+1. En el campo **Nombrar tu archivo...**, ingresa `publish.yml`.
+1. Agrega lo siguiente al archivo `publish.yml`:
+
+
+   ```yml
+   name: Publish to Docker
+   on:
+     push:
+       branches:
+         - stemdo
+   permissions:
+     packages: write
+     contents: read
+   jobs:
+     publish:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+         # Add your test steps here if needed...
+         - name: Docker meta
+           id: meta
+           uses: docker/metadata-action@v5
+           with:
+             images: ghcr.io/TU_NOMBRE/publish-packages/game
+             tags: type=sha
+         - name: Login to GHCR
+           uses: docker/login-action@v3
+           with:
+             registry: ghcr.io
+             username: ${{ github.repository_owner }}
+             password: ${{ secrets.GITHUB_TOKEN }}
+         - name: Build container
+           uses: docker/build-push-action@v5
+           with:
+             context: .
+             push: true
+             tags: ${{ steps.meta.outputs.tags }}
+   ```
+
+1. Reemplaza `TU_NOMBRE` con el nombre de la organización. Recuerda que estamos usando una organización usa el nombre de la organización y agregar tu nombre como sufijo a publish-packages.
+1. Asegúrate de que el nombre de la imagen sea único.
+1. Haz commit a tus cambios.
+1. (opcional) Crea una solicitud de extracción para ver todos los cambios que realizarás a lo largo de este curso. Haz clic en la pestaña **Pull Requests**, luego en **New pull request**, establece `base: stemdo` y `compare: cd`.
+1. Espera aproximadamente 20 segundos y luego actualiza esta página (la que estás siguiendo las instrucciones). [GitHub Actions](https://docs.github.com/en/actions) se actualizará automáticamente al siguiente paso.
 
 <footer>
 
